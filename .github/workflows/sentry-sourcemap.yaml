@@ -44,8 +44,8 @@ jobs:
             - name: Push Docker image
               run: docker push $IMAGE_NAME
 
-            - name: Trigger redeploy on Render
-              run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
+            # - name: Trigger redeploy on Render
+            #   run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
 
             # - name: Upload source maps to Sentry
             #   env:
