@@ -44,7 +44,8 @@ jobs:
                   release: ${{ github.sha }}
                   disable_telemetry: true
                   ignore_missing: true
-                  sourcemaps: "./.next"
+                  sourcemaps: ".next/static/**/*.map"
+                  url_prefix: "~/_next/static"
 
             - name: Delete source maps after upload
               run: |
