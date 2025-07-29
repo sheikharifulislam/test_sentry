@@ -44,8 +44,8 @@ jobs:
             - name: Push Docker image
               run: docker push $IMAGE_NAME
 
-            # - name: Trigger redeploy on Render
-            #   run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
+            - name: Trigger redeploy on Render
+              run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
 
             # - name: Upload source maps to Sentry
             #   env:
@@ -56,19 +56,19 @@ jobs:
             #       pnpm dlx @sentry/cli sourcemaps inject ./.next
             #       pnpm dlx @sentry/cli sourcemaps upload ./.next
 
-            # - name: Create Sentry Client release
-            #   uses: getsentry/action-release@v3
-            #   env:
-            #       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-            #       SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-            #       SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
-            #   with:
-            #       environment: production
-            #       release: ${{ github.sha }}
-            #       disable_telemetry: true
-            #       ignore_missing: true
-            #       sourcemaps: ""
-            #       # url_prefix: "~/_next/static"
+            - name: Create Sentry Client release
+              uses: getsentry/action-release@v3
+              env:
+                  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+                  SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+                  SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+              with:
+                  environment: production
+                  release: ${{ github.sha }}
+                  disable_telemetry: true
+                  ignore_missing: true
+                  sourcemaps: "./.next"
+                  # url_prefix: "~/_next/static"
 
             - name: Delete source maps after upload
               run: |
