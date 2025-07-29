@@ -21,4 +21,7 @@ export default withSentryConfig(nextConfig, {
 
     // Disable Sentry Webpack config in development mode.
     disableSentryWebpackConfig: true,
+
+    // org: "test-2iz",
+    // project: "test_sentry",
 });
