@@ -1,0 +1,53 @@
+name: Upload Sentry sourcemap
+
+on:
+    workflow_dispatch:
+    push:
+        branches:
+            - main
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+                  ref: "main"
+
+            - uses: pnpm/action-setup@v4
+              name: Install pnpm
+              with:
+                  run_install: false
+
+            - name: Use Node.js 22.x
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 22.x
+                  cache: "pnpm"
+
+            - name: Install dependencies
+              run: pnpm install --ignore-scripts
+
+            - name: Build
+              run: |
+                  NODE_OPTIONS=--max-old-space-size=4096 pnpm build
+
+            - name: Create Sentry Client release
+              uses: getsentry/action-release@v3
+              env:
+                  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+                  SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+                  SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+              with:
+                  environment: production
+                  release: ${{ github.sha }}
+                  disable_telemetry: true
+                  ignore_missing: true
+                  sourcemaps: "./.next"
+
+            - name: Delete source maps after upload
+              run: |
+                  echo "Deleting all .map files..."
+                  find apps/web/.next -type f -name '*.map' -delete
+                  echo "Source maps deleted."
