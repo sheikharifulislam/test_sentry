@@ -39,9 +39,9 @@ jobs:
                   SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
                   SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
               run: |
-                  pnpm dlx --package @sentry/cli sentry-cli releases new $GITHUB_SHA
-                  pnpm dlx --package @sentry/cli sentry-cli releases files $GITHUB_SHA upload-sourcemaps .next --url-prefix '~/'
-                  pnpm dlx --package @sentry/cli sentry-cli releases finalize $GITHUB_SHA
+                  pnpm dlx @sentry/cli sentry-cli releases new $GITHUB_SHA
+                  pnpm dlx @sentry/cli sentry-cli releases files $GITHUB_SHA upload-sourcemaps .next --url-prefix '~/'
+                  pnpm dlx @sentry/cli sentry-cli releases finalize $GITHUB_SHA
 
             # - name: Create Sentry Client release
             #   uses: getsentry/action-release@v3
