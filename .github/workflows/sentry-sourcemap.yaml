@@ -9,6 +9,8 @@ on:
 jobs:
     build:
         runs-on: ubuntu-latest
+        env:
+            IMAGE_NAME: sheikhariful/test_sentry:latest
         steps:
             - uses: actions/checkout@v4
               with:
@@ -33,14 +35,26 @@ jobs:
               run: |
                   NODE_OPTIONS=--max-old-space-size=4096 pnpm build
 
-            - name: Upload source maps to Sentry
-              env:
-                  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-                  SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-                  SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
-              run: |
-                  pnpm dlx @sentry/cli sourcemaps inject ./.next
-                  pnpm dlx @sentry/cli sourcemaps upload ./.next
+            - name: Log in to docker hub
+              run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+            - name: Build Docker image
+              run: docker build -t $IMAGE_NAME .
+
+            - name: Push Docker image
+              run: docker push $IMAGE_NAME
+
+            # - name: Trigger redeploy on Render
+            #   run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
+
+            # - name: Upload source maps to Sentry
+            #   env:
+            #       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+            #       SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+            #       SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+            #   run: |
+            #       pnpm dlx @sentry/cli sourcemaps inject ./.next
+            #       pnpm dlx @sentry/cli sourcemaps upload ./.next
 
             # - name: Create Sentry Client release
             #   uses: getsentry/action-release@v3

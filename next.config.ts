@@ -6,6 +6,7 @@ const isCI = process.env.CI === "true";
 const nextConfig: NextConfig = {
     /* config options here */
     productionBrowserSourceMaps: isCI,
+    output: "standalone",
 };
 
 export default withSentryConfig(nextConfig, {
