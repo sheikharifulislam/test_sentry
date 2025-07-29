@@ -33,19 +33,29 @@ jobs:
               run: |
                   NODE_OPTIONS=--max-old-space-size=4096 pnpm build
 
-            - name: Create Sentry Client release
-              uses: getsentry/action-release@v3
+            - name: Upload source maps to Sentry
               env:
                   SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
                   SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
                   SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
-              with:
-                  environment: production
-                  release: ${{ github.sha }}
-                  disable_telemetry: true
-                  ignore_missing: true
-                  sourcemaps: ".next/static/**/*.map"
-                  url_prefix: "~/_next/static"
+              run: |
+                  pnpm dlx --package @sentry/cli sentry-cli releases new $GITHUB_SHA
+                  pnpm dlx --package @sentry/cli sentry-cli releases files $GITHUB_SHA upload-sourcemaps .next --url-prefix '~/'
+                  pnpm dlx --package @sentry/cli sentry-cli releases finalize $GITHUB_SHA
+
+            # - name: Create Sentry Client release
+            #   uses: getsentry/action-release@v3
+            #   env:
+            #       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+            #       SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+            #       SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+            #   with:
+            #       environment: production
+            #       release: ${{ github.sha }}
+            #       disable_telemetry: true
+            #       ignore_missing: true
+            #       sourcemaps: ""
+            #       # url_prefix: "~/_next/static"
 
             - name: Delete source maps after upload
               run: |
