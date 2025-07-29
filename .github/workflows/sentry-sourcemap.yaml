@@ -49,5 +49,5 @@ jobs:
             - name: Delete source maps after upload
               run: |
                   echo "Deleting all .map files..."
-                  find apps/web/.next -type f -name '*.map' -delete
+                  find ./.next -type f -name '*.map' -delete
                   echo "Source maps deleted."
